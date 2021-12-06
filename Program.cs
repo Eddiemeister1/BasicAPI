@@ -12,10 +12,10 @@ builder.Services.AddControllers(); // Set up the controller style of building an
 builder.Services.AddEndpointsApiExplorer(); //Adds all of the endpoints for the API
 builder.Services.AddSwaggerGen(); //Adds the swagger.json file 
 
-builder.Services.AddDbContext<BasicDataContext>(builder =>
+builder.Services.AddDbContext<BasicDataContext>(options =>
 {
     //TODO: NEVER DO THIS.
-    builder.UseSqlServer(@"server=.\sqlexpress;database=basic_dev;integrated security=true");
+    options.UseSqlServer(builder.Configuration.GetConnectionString("basic"));
 });
 
 //Services have to be registered before this .Build() call.
