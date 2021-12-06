@@ -1,25 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BasicAPI.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace BasicAPI.Controllers
 {
+
     public class AgentsController : ControllerBase
     {
-        [HttpGet("/agents")]
-        public ActionResult GetAllAgents()
+        private readonly BasicDataContext _context;
+
+        public AgentsController(BasicDataContext context)
         {
-            var responses = new GetAgentsResponse();
-            responses.Agents = new()
-            {
-                new AgentResponseItem { Id = 1, FirstName = "Bob", LastName = "Smith", Email = "bob@aol.com", Phone = "555-1212" },
-                new AgentResponseItem { Id = 2, FirstName = "Sue", LastName = "Jones", Email = "sue@aol.com" },
-            };
-            return Ok(responses);
+            _context = context;
+        }
+
+        [HttpGet("/agents")]
+        public async Task<ActionResult<GetAgentsResponse>> GetAllAgents()
+        {
+            var response = new GetAgentsResponse();
+            response.Agents = await _context.Agents
+                .Where(a => a.Retired == false)
+                .Select(a => new AgentResponseItem //Map
+                {
+                    Id  = a.Id,
+                    FirstName = a.FirstName,
+                    LastName = a.LastName,
+                    Email = a.Email,
+                    Phone = a.Phone
+                }).ToListAsync();
+            return Ok(response);
         }
     }
 
     public class GetAgentsResponse
     {
+        [Required]
         public List<AgentResponseItem> Agents { get; set; } = new List<AgentResponseItem>();
     }
 
