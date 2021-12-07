@@ -15,8 +15,10 @@ namespace BasicAPI.Data
 
         public string? Email { get; set; }
 
-        public DateTime Added { get; set; }
+        public DateTime? Added { get; set; }
 
         public bool Retired { get; set; }
+
+        public string? State { get; set; }
     }
 }

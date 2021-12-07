@@ -1,5 +1,9 @@
 
+using AutoMapper;
+using BasicAPI;
+using BasicAPI.AutomapperProfiles;
 using BasicAPI.Data;
+using BasicAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 Console.WriteLine("Starting up"); 
@@ -14,9 +18,25 @@ builder.Services.AddSwaggerGen(); //Adds the swagger.json file
 
 builder.Services.AddDbContext<BasicDataContext>(options =>
 {
-    //TODO: NEVER DO THIS.
-    options.UseSqlServer(builder.Configuration.GetConnectionString("basic"));
+    //TODO: This is cool. Don't use hard-coded configuration strings.
+    options.UseSqlServer(builder.Configuration.GetConnectionString("basic"), providerOptions =>
+    {
+        providerOptions.CommandTimeout(160);
+        providerOptions.EnableRetryOnFailure();
+    });
 });
+
+var mapperConfiguration = new MapperConfiguration(m =>
+{
+    m.AddProfile<AgentsProfiles>();
+    // Add other profiles here as you need them
+});
+
+var mapper = mapperConfiguration.CreateMapper();
+
+builder.Services.AddSingleton<IMapper>(mapper);
+builder.Services.AddSingleton<MapperConfiguration>(mapperConfiguration);
+builder.Services.AddTransient<ILookupOnCallDevelopers, LocalDeveloperLookup>();
 
 //Services have to be registered before this .Build() call.
 var app = builder.Build();

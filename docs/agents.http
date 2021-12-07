@@ -2,3 +2,52 @@
 
 GET http://localhost:1337/agents HTTP/1.1
 Accept: application/json
+
+
+
+### Get filtered agents
+
+GET http://localhost:1337/agents?state=CA HTTP/1.1
+
+
+
+### GET a specific Agent
+GET http://localhost:1337/agents/5 HTTP/1.1
+
+
+### POST an Agent
+
+POST http://localhost:1337/agents HTTP/1.1
+Content-Type: application/json
+
+{
+    "firstName": "Steve", 
+    "lastName": "Smith", 
+    "phone": "555-1212", 
+    "email": "Bob@aol.com",
+    "stateCode": "OH"
+}
+
+### Retiring an Agent
+
+DELETE http://localhost:1337/agents/7 HTTP/1.1
+
+###PUT an Agent
+PUT https://localhost:1337/agents/4 HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Cassavetes",
+    "phone": "555-3323",
+    "email": "john@nyfile.com",
+    "state": "OH",
+    "salary": 500000
+}
+
+### Miniput on agents email
+PUT http://localhost:1337/agents/1/email HTTP/1.1
+Content-type: application/json
+
+"john@nyfilm.com"
