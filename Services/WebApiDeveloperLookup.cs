@@ -1,29 +1,31 @@
-﻿using BasicAPI.Controllers;
+﻿using BasicAPI;
+using BasicAPI.Controllers;
 using System.Net.Http.Headers;
 
-namespace BasicAPI.Services
-{
-    public class WebApiDeveloperLookup : ILookupOnCallDevelopers
-    {
-        private readonly HttpClient _httpClient;
+namespace BasicApi.Services;
 
-        public WebApiDeveloperLookup(HttpClient httpClient)
+public class WebApiDeveloperLookup : ILookupOnCallDevelopers
+{
+    private readonly HttpClient _httpClient;
+
+    public WebApiDeveloperLookup(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "agents-api");
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    }
+
+    public async Task<OnCallDeveloperInformation> GetOnCallDeveloperAsync()
+    {
+        var response = await _httpClient.GetAsync("/");
+        if (!response.IsSuccessStatusCode)
         {
-            _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "agents-api");
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            throw new DeveloperApiException();
         }
-        public async Task<OnCallDeveloperInformation> GetOnCallDeveloperAsync()
+        else
         {
-            var response = await _httpClient.GetAsync("/");
-            if(!response.IsSuccessStatusCode)
-            {
-                throw new DeveloperApiException();
-            } else
-            {
-                var content = await response.Content.ReadFromJsonAsync<OnCallDeveloperInformation>();
-                return content;
-            }
+            var content = await response.Content.ReadFromJsonAsync<OnCallDeveloperInformation>();
+            return content;
         }
     }
 }
